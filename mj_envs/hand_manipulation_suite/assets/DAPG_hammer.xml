@@ -42,15 +42,16 @@
         <camera name="fixed" pos="0 -0.7 0.7" quat="0.92388 0.382683 0 0" />
         <!-- Camera for the VIL paper -->
         <camera name="vil_camera" pos="0 -1.2 1.2" quat="0.92388 0.382683 0 0" />
+        <camera name="top" pos="0 0 1.1" euler="0 0 3.14" />
  
         <!-- ======= TABLE ======= -->
         <body name="table">
             <!-- <geom size="0.5 0.5 0.025" type="plane" material="table2d" /> --> <!-- Plane has better contacts -->
-            <geom size="0.45 0.45 0.025" pos="0 0 -0.025" type="box" material="tablecube" />
-            <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
-            <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
-            <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
-            <geom size="0.04 0.5" pos="-0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
+            <geom size="0.45 0.45 0.025" pos="0 0 -0.025" type="box" material="tablecube"/>
+            <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0"/>
+            <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0"/>
+            <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0"/>
+            <geom size="0.04 0.5" pos="-0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0"/>
         </body>
         
         <!-- ======= MOCAP ======= -->

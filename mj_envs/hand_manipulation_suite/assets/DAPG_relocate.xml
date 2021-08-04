@@ -20,20 +20,25 @@
 
     <!-- ======= WORLD ======= -->
     <worldbody>
-        <light directional='false' diffuse='.7 .7 .7' specular='0.03 0.03 0.03' pos='-1 -1.0 4.0' dir='1 1.0 -4'/>
+        <light directional='false' diffuse='.7 .7 .7' castshadow="false" specular='0.03 0.03 0.03' pos='-1 -1.0 4.0' dir='1 1.0 -4'/>
         <geom name='ground' size="1.5 1.5 0.25" pos="0 0 -1" type="plane" contype="1" conaffinity="0" material="groundplane" />
         <camera name="fixed" pos="0 -0.7 0.7" quat="0.92388 0.382683 0 0" />
         <!-- Camera for the VIL paper -->
         <camera name="vil_camera" pos="0 -1.2 1.2" quat="0.92388 0.382683 0 0" />
+        <camera name="left_cross" pos="0.8 0. 0.2" euler="0 1.57 1.57" />
+        <camera name="top" pos="0 0.8 0.2" euler="-1.57 0 3.14" />
+        <camera name="right_cross" pos="0 -0.04 1.0" euler="0 0 3.14" />
+        <camera name="bottom" pos="0 -0.04 -1.0" euler="-3.14 0 3.14" />
+        <camera name="right" pos="-0.8 -0.8 0.8" euler="0.785 -0.785 -0.785" />
  
         <!-- ======= TABLE ======= -->
         <body name="table">
             <!-- <geom size="0.5 0.5 0.025" type="plane" material="table2d" /> --> <!-- Plane has better contacts -->
-            <geom size="0.45 0.45 0.025" pos="0 0 -0.025" type="box" material="tablecube" />
-            <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
-            <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
-            <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
-            <geom size="0.04 0.5" pos="-0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
+            <geom size="0.45 0.45 0.025" pos="0 0 -0.025" type="box" material="tablecube" rgba="0 0 0 0" />
+            <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" rgba="0 0 0 0"/>
+            <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" rgba="0 0 0 0" />
+            <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" rgba="0 0 0 0" />
+            <geom size="0.04 0.5" pos="-0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" rgba="0 0 0 0"/>
         </body>
         
         <!-- ======= MOCAP ======= -->
@@ -58,7 +63,7 @@
         </body>
 
         <!-- ======= DESTINATION ======= -->
-        <site name="target" pos="-0.007 0.0 0.2" size="0.07" rgba="0 1 0 0.125" />
+        <site name="target" pos="-0.007 0.0 0.2" size="0.07" rgba="0 1 0 0.3" />
 
         <!-- ======= OBJECT ======= -->
         <body name="Object" pos="-0.00 0.0 0.035" user="1001 0 2003 27 0 0 0.06 0 0">
@@ -69,7 +74,7 @@
             <joint name="OBJRx" pos="0 0 0" axis="1 0 0" limited="false" damping="0" />
             <joint name="OBJRy" pos="0 0 0" axis="0 1 0" limited="false" damping="0" />
             <joint name="OBJRz" pos="0 0 0" axis="0 0 1" limited="false" damping="0" />
-            <geom name="sphere" size="0.035" condim="4" material="MatWoodB" />
+            <geom name="sphere" size="0.035" condim="4" rgba="1 0 0 1"/>
         </body>
     </worldbody>
     
