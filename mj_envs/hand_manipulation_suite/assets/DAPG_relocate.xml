@@ -25,11 +25,9 @@
         <camera name="fixed" pos="0 -0.7 0.7" quat="0.92388 0.382683 0 0" />
         <!-- Camera for the VIL paper -->
         <camera name="vil_camera" pos="0 -1.2 1.2" quat="0.92388 0.382683 0 0" />
-        <camera name="left_cross" pos="0.8 0. 0.2" euler="0 1.57 1.57" />
-        <camera name="top" pos="0 0.8 0.2" euler="-1.57 0 3.14" />
-        <camera name="right_cross" pos="0 -0.04 1.0" euler="0 0 3.14" />
-        <camera name="bottom" pos="0 -0.04 -1.0" euler="-3.14 0 3.14" />
-        <camera name="right" pos="-0.8 -0.8 0.8" euler="0.785 -0.785 -0.785" />
+        <camera name="cam3" pos="0.8 0. 0.2" euler="0 1.57 1.57" />
+        <camera name="cam2" pos="0 0.8 0.2" euler="-1.57 0 3.14" />
+        <camera name="cam1" pos="0 -0.04 -1.0" euler="-3.14 0 3.14" />
  
         <!-- ======= TABLE ======= -->
         <body name="table">
