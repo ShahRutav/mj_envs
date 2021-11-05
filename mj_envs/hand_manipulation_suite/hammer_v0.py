@@ -6,6 +6,7 @@ from mj_envs.utils.quatmath import *
 import os
 
 ADD_BONUS_REWARDS = True
+USE_SPARSE_REWARDS = True
 
 class HammerEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
@@ -67,6 +68,13 @@ class HammerEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
                 reward += 25
             if (np.linalg.norm(target_pos - goal_pos) < 0.010):
                 reward += 75
+
+        if USE_SPARSE_REWARDS:
+            reward = -10 * np.linalg.norm(target_pos - goal_pos)
+            if (np.linalg.norm(target_pos - goal_pos) < 0.020):
+                reward += 25
+            if (np.linalg.norm(target_pos - goal_pos) < 0.010):
+                reward += 75            
 
         goal_achieved = True if np.linalg.norm(target_pos - goal_pos) < 0.010 else False
 

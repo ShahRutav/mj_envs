@@ -5,6 +5,7 @@ from mujoco_py import MjViewer
 import os
 
 ADD_BONUS_REWARDS = True
+USE_SPARSE_REWARDS = True
 
 class DoorEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
@@ -60,7 +61,16 @@ class DoorEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
             if door_pos > 1.35:
                 reward += 10
 
-        goal_achieved = True if door_pos >= 1.35 else False
+        if USE_SPARSE_REWARDS:
+            reward = -0.1*(door_pos - 1.57)*(door_pos - 1.57)
+            if door_pos > 0.2:
+                reward += 2
+            if door_pos > 1.0:
+                reward += 8
+            if door_pos > 1.35:
+                reward += 10
+
+        goal_achieved = True if door_pos > 1.4 else False
 
         return ob, reward, False, dict(goal_achieved=goal_achieved)
 

@@ -6,6 +6,7 @@ from mujoco_py import MjViewer
 import os
 
 ADD_BONUS_REWARDS = True
+USE_SPARSE_REWARDS = True
 
 class PenEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
@@ -82,7 +83,13 @@ class PenEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
             reward -= 5
             done = True if not starting_up else False
 
-        goal_achieved = True if (dist < 0.075 and orien_similarity > 0.95) else False
+        if USE_SPARSE_REWARDS:
+            if dist < 0.075 and orien_similarity > 0.95:
+                reward = 50
+            else: 
+                reward = 0
+        # goal_achieved = True if (dist < 0.075 and orien_similarity > 0.95) else False
+        goal_achieved = True if (orien_similarity > 0.95) else False
 
         return self.get_obs(), reward, done, dict(goal_achieved=goal_achieved)
 

@@ -5,6 +5,7 @@ from mujoco_py import MjViewer
 import os
 
 ADD_BONUS_REWARDS = True
+USE_SPARSE_REWARDS = True
 
 class RelocateEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
@@ -53,6 +54,13 @@ class RelocateEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
             if np.linalg.norm(obj_pos-target_pos) < 0.05:
                 reward += 20.0                                          # bonus for object "very" close to target
 
+        if USE_SPARSE_REWARDS:
+            reward = 0
+            if np.linalg.norm(obj_pos-target_pos) < 0.1:
+                reward += 10.0 
+            if np.linalg.norm(obj_pos-target_pos) < 0.05:
+                reward += 20.0
+
         goal_achieved = True if np.linalg.norm(obj_pos-target_pos) < 0.1 else False
 
         return ob, reward, False, dict(goal_achieved=goal_achieved)
@@ -75,7 +83,7 @@ class RelocateEnvV0(mujoco_env.MujocoEnv, utils.EzPickle):
         self.model.body_pos[self.obj_bid,1] = self.np_random.uniform(low=-0.15, high=0.3)
         self.model.site_pos[self.target_obj_sid, 0] = self.np_random.uniform(low=-0.2, high=0.2)
         self.model.site_pos[self.target_obj_sid,1] = self.np_random.uniform(low=-0.2, high=0.2)
-        self.model.site_pos[self.target_obj_sid,2] = self.np_random.uniform(low=0.15, high=0.35)
+        self.model.site_pos[self.target_obj_sid,2] = 0.25 
         self.sim.forward()
         return self.get_obs()
 
