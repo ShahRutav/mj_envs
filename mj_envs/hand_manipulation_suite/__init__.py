@@ -32,3 +32,19 @@ register(
     max_episode_steps=200,
 )
 from mj_envs.hand_manipulation_suite.relocate_v0 import RelocateEnvV0
+
+# Swing the door open
+register(
+    id='door-vis-dis-v0',
+    entry_point='mj_envs.hand_manipulation_suite:DoorEnvVDV0',
+    max_episode_steps=200,
+)
+from mj_envs.hand_manipulation_suite.door_vis_dis_v0 import DoorEnvVDV0
+
+# Hammer a nail into the board
+register(
+    id='hammer-vis-dis-v0',
+    entry_point='mj_envs.hand_manipulation_suite:HammerEnvVDV0',
+    max_episode_steps=200,
+)
+from mj_envs.hand_manipulation_suite.hammer_vis_dis_v0 import HammerEnvVDV0
