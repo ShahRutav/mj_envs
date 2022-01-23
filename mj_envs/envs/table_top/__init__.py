@@ -16,7 +16,7 @@ register(
         #"obs_keys_wt": obs_keys_wt,
         "generate_rd_tools": False,
     },
-    max_episode_steps=50,
+    max_episode_steps=100,
     )
 register(
     id='reorient-random-v0',
@@ -28,7 +28,7 @@ register(
         #"obs_keys_wt": obs_keys_wt,
         "generate_rd_tools": False,
     },
-    max_episode_steps=50,
+    max_episode_steps=100,
 )
 register(
     id='reorient-random-full-v0',
@@ -40,7 +40,7 @@ register(
         #"obs_keys_wt": obs_keys_wt,
         "generate_rd_tools": False,
     },
-    max_episode_steps=50,
+    max_episode_steps=100,
 )
 register(
     id='reorient-fixed-v1',
@@ -52,7 +52,7 @@ register(
         #"obs_keys_wt": obs_keys_wt,
         "generate_rd_tools": True,
     },
-    max_episode_steps=50,
+    max_episode_steps=100,
     )
 register(
     id='reorient-random-v1',
@@ -64,7 +64,7 @@ register(
         #"obs_keys_wt": obs_keys_wt,
         "generate_rd_tools": True,
     },
-    max_episode_steps=50,
+    max_episode_steps=100,
 )
 register(
     id='reorient-random-full-v1',
@@ -76,6 +76,6 @@ register(
         #"obs_keys_wt": obs_keys_wt,
         "generate_rd_tools": True,
     },
-    max_episode_steps=50,
+    max_episode_steps=100,
 )
 from mj_envs.envs.table_top.reorient_v0 import ReorientEnvV0
