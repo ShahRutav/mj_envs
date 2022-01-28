@@ -25,9 +25,9 @@ class ReorientEnvV0(mujoco_env.MujocoEnv, utils.EzPickle, ObsVecDict):
         self.obj_b_sid = sim.model.site_name2id('object_bottom')
         self.tar_t_sid = sim.model.site_name2id('target_top')
         self.tar_b_sid = sim.model.site_name2id('target_bottom')
-        self.tool_handle_id = sim.model.geom_name2id('h_handle')
-        self.tool_neck_id = sim.model.geom_name2id('h_neck')
-        self.tool_head_id = sim.model.geom_name2id('h_head')
+        self.tool_handle_id = sim.model.geom_name2id('obj_handle')
+        self.tool_neck_id = sim.model.geom_name2id('obj_neck')
+        self.tool_head_id = sim.model.geom_name2id('obj_head')
         self.tar_handle_sid = sim.model.site_name2id('target_handle')
         self.tar_neck_sid = sim.model.site_name2id('target_neck')
         self.tar_head_sid = sim.model.site_name2id('target_head')
@@ -44,7 +44,7 @@ class ReorientEnvV0(mujoco_env.MujocoEnv, utils.EzPickle, ObsVecDict):
         self.rwd_dict = {}
         mujoco_env.MujocoEnv.__init__(self, sim=sim, frame_skip=5)
         self.action_space = spaces.Box(-1.0*np.ones_like(self.action_space.low), np.ones_like(self.action_space.high), dtype=np.float32)
-
+        self.set_tools()
 
     # step the simulation forward
     def step(self, a):
@@ -185,42 +185,85 @@ class ReorientEnvV0(mujoco_env.MujocoEnv, utils.EzPickle, ObsVecDict):
         desired_orien[0] = self.np_random.uniform(low=self.kwargs['goal'][0][0], high=self.kwargs['goal'][0][1])
         desired_orien[1] = self.np_random.uniform(low=self.kwargs['goal'][1][0], high=self.kwargs['goal'][1][1])
         desired_orien[2] = self.np_random.uniform(low=self.kwargs['goal'][2][0], high=self.kwargs['goal'][2][1])
-        #print("Desired Orientation: ", desired_orien[2])
+        #print("Desired Orientation: ", desired_orien[1])
         self.model.body_quat[self.target_obj_bid] = euler2quat(desired_orien)
         self.model.body_pos[self.ctrl1_bid] = self.np_random.uniform(
                                                                         low=np.array([self.kwargs["ctrl1"][ind][0] for ind in range(3)]),
                                                                         high=np.array([self.kwargs["ctrl1"][ind][1] for ind in range(3)])
                                                                     )
-        if self.kwargs['generate_rd_tools']:
-            #print(self.sim.model.geom_type[handle_id],self.sim.model.geom_type[neck_id],self.sim.model.geom_type[head_id])
-            self.sim.model.geom_type[self.tool_handle_id] = self.np_random.choice([3,5])
-            self.sim.model.geom_type[self.tool_neck_id] = self.np_random.choice([3,5])
-            self.sim.model.geom_type[self.tool_head_id] = self.np_random.choice([3,5])
-            self.sim.model.geom_rgba[self.tool_handle_id] = self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.]))
-            self.sim.model.geom_rgba[self.tool_neck_id] = self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.]))
-            self.sim.model.geom_rgba[self.tool_head_id] = self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.]))
-            #print(self.sim.model.geom_size[self.tool_head_id],self.sim.model.geom_size[self.tool_neck_id],self.sim.model.geom_size[self.tool_handle_id])
-            #[0.02 0.04 0.] [0.007 0.085 0.] [0.025 0.05  0.]
-            self.sim.model.geom_size[self.tool_head_id] = self.np_random.uniform(low=np.array([.01, .03, .0]), high=np.array([.03, .05, .0]))
-            self.sim.model.geom_size[self.tool_neck_id] = self.np_random.uniform(low=np.array([.002, .085, .0]), high=np.array([.012, .135, .0]))
-            self.sim.model.geom_size[self.tool_handle_id] = self.np_random.uniform(low=np.array([.015, .04, .0]), high=np.array([.035, .06, .0]))
-            self.copy_tool2tar()
+
+        tool_ind = self.np_random.randint(self.kwargs['num_tools'], size=(1,))
+        tool_type_ind = min(tool_ind, len(self.rd_tool_type)-1)
+        self.sim.model.geom_type[self.tool_handle_id] = self.rd_tool_type[tool_type_ind,0]
+        self.sim.model.geom_type[self.tool_neck_id] = self.rd_tool_type[tool_type_ind,1]
+        self.sim.model.geom_type[self.tool_head_id] = self.rd_tool_type[tool_type_ind,2]
+
+        tool_rgba_ind = min(tool_ind, len(self.rd_tool_rgba)-1)
+        self.sim.model.geom_rgba[self.tool_handle_id] = self.rd_tool_rgba[tool_rgba_ind,0]
+        self.sim.model.geom_rgba[self.tool_neck_id] = self.rd_tool_rgba[tool_rgba_ind,1]
+        self.sim.model.geom_rgba[self.tool_head_id] = self.rd_tool_rgba[tool_rgba_ind,2]
+
+        tool_size_ind = min(tool_ind, len(self.rd_tool_size)-1)
+        self.sim.model.geom_size[self.tool_handle_id] = self.rd_tool_size[tool_size_ind,0]
+        self.sim.model.geom_size[self.tool_neck_id] = self.rd_tool_size[tool_size_ind,1]
+        self.sim.model.geom_size[self.tool_head_id] = self.rd_tool_size[tool_size_ind,2]
+
+        self.copy_tool2tar()
 
         self.sim.forward()
         return self.get_obs()
 
+    def set_tools(self):
+        self.rd_tool_type = [ [self.sim.model.geom_type[self.tool_handle_id], self.sim.model.geom_type[self.tool_neck_id], self.sim.model.geom_type[self.tool_head_id]] ]
+        self.rd_tool_rgba = [ [self.sim.model.geom_rgba[self.tool_handle_id], self.sim.model.geom_rgba[self.tool_neck_id], self.sim.model.geom_rgba[self.tool_head_id]] ]
+        self.rd_tool_size  = [ [self.sim.model.geom_size[self.tool_handle_id], self.sim.model.geom_size[self.tool_neck_id], self.sim.model.geom_size[self.tool_head_id]] ]
+        num_tools = self.kwargs['num_tools']
+        if self.kwargs['generate_rd_tools']['rd_tool_type']:
+            init_type = self.rd_tool_type[0]
+            self.rd_tool_type = []
+            for _ in range(num_tools):
+                temp = np.array([self.np_random.choice([3,5]), self.np_random.choice([3,5]), self.np_random.choice([3,5])])
+                self.rd_tool_type.append(temp)
+        if self.kwargs['generate_rd_tools']['rd_tool_rgba']:
+            init_rgba = self.rd_tool_rgba[0]
+            self.rd_tool_rgba = []
+            for _ in range(num_tools):
+                temp = np.array([
+                            self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.])),
+                            self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.])),
+                            self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.]))
+                        ])
+                self.rd_tool_rgba.append(temp)
+        if self.kwargs['generate_rd_tools']['rd_tool_size']:
+            init_size = self.rd_tool_size[0]
+            self.rd_tool_size = []
+            for _ in range(num_tools):
+                temp = np.array([
+                            init_size[0] + self.np_random.uniform(low=np.array([-0.01, -0.01, 0.0]), high=np.array([.01, .01, .0])),
+                            init_size[1] + self.np_random.uniform(low=np.array([-0.005, -0.025, 0.0]), high=np.array([0.005, 0.025, 0.0])),
+                            init_size[2] + self.np_random.uniform(low=np.array([-0.01, -0.01, 0.0]), high=np.array([0.01, 0.01, 0.0]))
+                        ])
+                self.rd_tool_size.append(temp)
+        self.rd_tool_type = np.array(self.rd_tool_type).squeeze()
+        self.rd_tool_rgba = np.array(self.rd_tool_rgba).squeeze()
+        self.rd_tool_size = np.array(self.rd_tool_size).squeeze()
+
     def copy_tool2tar(self):
         self.sim.model.site_type[self.tar_handle_sid] = self.sim.model.geom_type[self.tool_handle_id]
-        self.sim.model.site_type[self.tar_neck_sid]  = self.sim.model.geom_type[self.tool_neck_id]
-        self.sim.model.site_type[self.tar_head_sid]  = self.sim.model.geom_type[self.tool_head_id]
+        self.sim.model.site_type[self.tar_neck_sid] = self.sim.model.geom_type[self.tool_neck_id]
+        self.sim.model.site_type[self.tar_head_sid] = self.sim.model.geom_type[self.tool_head_id]
 
         self.sim.model.site_rgba[self.tar_handle_sid] = self.sim.model.geom_rgba[self.tool_handle_id]
-        self.sim.model.site_rgba[self.tar_neck_sid]  = self.sim.model.geom_rgba[self.tool_neck_id]
-        self.sim.model.site_rgba[self.tar_head_sid]  = self.sim.model.geom_rgba[self.tool_head_id]
+        self.sim.model.site_rgba[self.tar_neck_sid] = self.sim.model.geom_rgba[self.tool_neck_id]
+        self.sim.model.site_rgba[self.tar_head_sid] = self.sim.model.geom_rgba[self.tool_head_id]
 
         self.sim.model.site_size[self.tar_handle_sid] = self.sim.model.geom_size[self.tool_handle_id]
-        self.sim.model.site_size[self.tar_neck_sid]  = self.sim.model.geom_size[self.tool_neck_id]
-        self.sim.model.site_size[self.tar_head_sid]  = self.sim.model.geom_size[self.tool_head_id]
+        self.sim.model.site_size[self.tar_neck_sid] = self.sim.model.geom_size[self.tool_neck_id]
+        self.sim.model.site_size[self.tar_head_sid] = self.sim.model.geom_size[self.tool_head_id]
+
+        self.sim.model.site_matid[self.tar_handle_sid] = self.sim.model.geom_matid[self.tool_handle_id]
+        self.sim.model.site_matid[self.tar_neck_sid] = self.sim.model.geom_matid[self.tool_neck_id]
+        self.sim.model.site_matid[self.tar_head_sid] = self.sim.model.geom_matid[self.tool_head_id]
 
     def get_env_state(self):
         """
