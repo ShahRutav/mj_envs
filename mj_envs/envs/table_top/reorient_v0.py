@@ -208,16 +208,23 @@ class ReorientEnvV0(mujoco_env.MujocoEnv, utils.EzPickle, ObsVecDict):
         self.sim.model.geom_size[self.tool_neck_id] = self.rd_tool_size[tool_size_ind,1]
         self.sim.model.geom_size[self.tool_head_id] = self.rd_tool_size[tool_size_ind,2]
 
+        table_ind = self.np_random.randint(self.kwargs['num_tables'], size=(1,))
+        table_rgba_ind = min(table_ind, len(self.rd_table_rgba)-1)
+        #print(self.rd_table_rgba[table_rgba_ind] )
+        self.sim.model.geom_rgba[1] = self.rd_table_rgba[table_rgba_ind]
+
         self.copy_tool2tar()
 
         self.sim.forward()
         return self.get_obs()
 
     def set_tools(self):
-        self.rd_tool_type = [ [self.sim.model.geom_type[self.tool_handle_id], self.sim.model.geom_type[self.tool_neck_id], self.sim.model.geom_type[self.tool_head_id]] ]
-        self.rd_tool_rgba = [ [self.sim.model.geom_rgba[self.tool_handle_id], self.sim.model.geom_rgba[self.tool_neck_id], self.sim.model.geom_rgba[self.tool_head_id]] ]
-        self.rd_tool_size  = [ [self.sim.model.geom_size[self.tool_handle_id], self.sim.model.geom_size[self.tool_neck_id], self.sim.model.geom_size[self.tool_head_id]] ]
+        self.rd_tool_type = [ np.array([self.sim.model.geom_type[self.tool_handle_id], self.sim.model.geom_type[self.tool_neck_id], self.sim.model.geom_type[self.tool_head_id]]) ]
+        self.rd_tool_rgba = [ np.array([self.sim.model.geom_rgba[self.tool_handle_id], self.sim.model.geom_rgba[self.tool_neck_id], self.sim.model.geom_rgba[self.tool_head_id]]) ]
+        self.rd_tool_size  = [ np.array([self.sim.model.geom_size[self.tool_handle_id], self.sim.model.geom_size[self.tool_neck_id], self.sim.model.geom_size[self.tool_head_id]]) ]
+        self.rd_table_rgba = [ np.array([self.sim.model.geom_rgba[1]]) ]
         num_tools = self.kwargs['num_tools']
+        num_tables = self.kwargs['num_tables']
         if self.kwargs['generate_rd_tools']['rd_tool_type']:
             init_type = self.rd_tool_type[0]
             self.rd_tool_type = []
@@ -244,9 +251,18 @@ class ReorientEnvV0(mujoco_env.MujocoEnv, utils.EzPickle, ObsVecDict):
                             init_size[2] + self.np_random.uniform(low=np.array([-0.01, -0.01, 0.0]), high=np.array([0.01, 0.01, 0.0]))
                         ])
                 self.rd_tool_size.append(temp)
-        self.rd_tool_type = np.array(self.rd_tool_type).squeeze()
-        self.rd_tool_rgba = np.array(self.rd_tool_rgba).squeeze()
-        self.rd_tool_size = np.array(self.rd_tool_size).squeeze()
+        if self.kwargs['generate_rd_tools']['rd_table_rgba']:
+            init_rgba = self.rd_table_rgba[0]
+            self.rd_table_rgba = []
+            for _ in range(num_tables):
+                temp = np.array([self.np_random.uniform(low=np.array([0., 0., 0., 1.]), high=np.array([1., 1., 1., 1.]))])
+                self.rd_table_rgba.append(temp)
+
+        self.rd_tool_type = np.array(self.rd_tool_type).squeeze() if len(self.rd_tool_type) > 1 else np.array(self.rd_tool_type)
+        self.rd_tool_rgba = np.array(self.rd_tool_rgba).squeeze() if len(self.rd_tool_rgba) > 1 else np.array(self.rd_tool_rgba)
+        self.rd_tool_size = np.array(self.rd_tool_size).squeeze() if len(self.rd_tool_size) > 1 else np.array(self.rd_tool_size)
+        self.rd_table_rgba = np.array(self.rd_table_rgba).squeeze() if len(self.rd_table_rgba) > 1 else np.array(self.rd_table_rgba)
+        #print(self.rd_table_rgba.shape)
 
     def copy_tool2tar(self):
         self.sim.model.site_type[self.tar_handle_sid] = self.sim.model.geom_type[self.tool_handle_id]
