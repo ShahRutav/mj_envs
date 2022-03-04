@@ -4,7 +4,7 @@ from gym.envs.registration import register
 print("RS:> Registering Table Top Envs")
 # Swing the door open
 curr_dir = os.path.dirname(os.path.abspath(__file__))
-TABLE_TOP_ENVS = {'reorient-fixed-v0', 'reorient-random-v0', 'reorient-random-full-v0', 'reorient-fixed-v1', 'reorient-random-v1', 'reorient-random-full-v1', 'reorient-tool_color-v1', 'reorient-table_color-v1'}
+TABLE_TOP_ENVS = {'reorient-fixed-v0', 'reorient-random-v0', 'reorient-random-full-v0', 'reorient-fixed-v1', 'reorient-random-v1', 'reorient-random-full-v1', 'reorient-tool_color-full-v1', 'reorient-table_color-full-v1'}
 
 MODEL_PATH=curr_dir+'/assets/reorient.xml'
 register(
@@ -92,7 +92,7 @@ register(
     max_episode_steps=100,
 )
 register(
-    id='reorient-tool_color-v1',
+    id='reorient-tool_color-full-v1',
     entry_point='mj_envs.envs.table_top:ReorientEnvV0',
     kwargs={
         "model_path": MODEL_PATH,
@@ -106,7 +106,7 @@ register(
     max_episode_steps=100,
 )
 register(
-    id='reorient-table_color-v1',
+    id='reorient-table_color-full-v1',
     entry_point='mj_envs.envs.table_top:ReorientEnvV0',
     kwargs={
         "model_path": MODEL_PATH,
