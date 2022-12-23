@@ -114,7 +114,7 @@ class PickPlaceV0(env_base.MujocoEnv):
                 bid = self.sim.model.body_name2id(body)
                 self.sim.model.body_pos[bid] += self.np_random.uniform(low=[-.010, -.010, -.010], high=[-.010, -.010, -.010])# random pos
                 self.sim.model.body_quat[bid] = euler2quat(self.np_random.uniform(low=(-np.pi/2, -np.pi/2, -np.pi/2), high=(np.pi/2, np.pi/2, np.pi/2)) ) # random quat
-
+            for body in ["obj1", "obj2"]:
                 for gid in range(self.sim.model.body_geomnum[bid]):
                     gid+=self.sim.model.body_geomadr[bid]
                     self.sim.model.geom_type[gid]=self.np_random.randint(low=2, high=7) # random shape
